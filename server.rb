@@ -14,7 +14,7 @@ class Server
     def run
         loop do
             client = @connection.accept    # Wait for a client to connect
-            client.puts('Hello!')
+            client.puts 'Hello!'
             client.close
         end
     end
