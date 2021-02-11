@@ -13,9 +13,16 @@ class Server
 
     def run
         loop do
-            client = @connection.accept    # Wait for a client to connect
-            client.puts 'Hello!'
-            client.close
+            Thread.start(@connection.accept()) do | client |
+                
+                while command = client.gets()
+                
+                    client.puts (command)
+                    client.puts ('Hello!')
+                end
+                
+                client.close()
+            end
         end
     end
 
