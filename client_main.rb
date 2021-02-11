@@ -5,8 +5,21 @@ port = ARGV[1]
 
 socket = TCPSocket.new(hostname, port)
 
-while line = socket.gets  # Read lines from socket
-  puts line
-end
+listener = Thread.new {
+  while line = socket.gets()  # Read lines from socket
+    puts (line)
+  end
+}
 
-socket.close              # close socket when done
+speaker = Thread.new {
+  loop do
+      print("> ")
+      socket.puts(STDIN.gets())
+      sleep(0.1)
+  end
+}
+
+listener.join()
+speaker.join()
+
+socket.close()              # close socket when done
