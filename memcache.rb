@@ -26,7 +26,11 @@ class Memcache
     end
 
     def add(key, flags, exptime, bytes, noreply, data_block)
+        return Reply::NOT_STORED if @storage.key?(key)
         
+        item = Item.new(key, flags, exptime, bytes, data_block)
+        @storage.store(key, item)
+        return Reply::STORED
     end
 
     def replace(key, flags, exptime, bytes, noreply, data_block)
