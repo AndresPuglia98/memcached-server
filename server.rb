@@ -16,7 +16,6 @@ class Server
             Thread.start(@connection.accept()) do | client |
                 
                 while command = client.gets()
-                
                     client.puts (command)
                     client.puts ('Hello!')
                 end
