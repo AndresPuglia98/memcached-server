@@ -18,7 +18,7 @@ event_handler = Thread.new {
   loop do
       command = STDIN.gets()
       socket.write(command)
-      break if $_.match(Reply::END_)
+      break if $_.match(MemcachedServer::Reply::END_)
       sleep(0.1)
   end
 }
