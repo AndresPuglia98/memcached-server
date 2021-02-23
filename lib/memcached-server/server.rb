@@ -1,7 +1,7 @@
 require 'socket'
-require_relative 'memcache.rb'
-require_relative 'format.rb'
-require_relative 'errors.rb'
+require_relative './memcache.rb'
+require_relative './cmd_format.rb'
+require_relative './errors.rb'
 
 class Server
 
@@ -30,7 +30,7 @@ class Server
                         if valid_command
                             close = run_command(connection, valid_command)
                         else 
-                            connection.puts(Error::CLIENT_ERROR % [" Undefined command. Please check the command syntax."])
+                            connection.puts(Error::CLIENT_ERROR % [" Undefined command. Please check the command syntax and try again."])
                         end
 
                         break if close

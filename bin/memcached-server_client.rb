@@ -1,5 +1,7 @@
+#!/usr/bin/envy ruby
+
 require 'socket'
-require_relative 'reply.rb'
+require_relative '../lib/memcached-server.rb'
 
 hostname = ARGV[0]
 port = ARGV[1]
@@ -12,7 +14,7 @@ listener = Thread.new {
   end
 }
 
-speaker = Thread.new {
+event_handler = Thread.new {
   loop do
       command = STDIN.gets()
       socket.write(command)
@@ -22,6 +24,6 @@ speaker = Thread.new {
 }
 
 listener.join()
-speaker.join()
+event_handler.join()
 
-socket.close()              # close socket when done
+socket.close()

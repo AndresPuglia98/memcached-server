@@ -1,4 +1,6 @@
-require_relative 'server.rb'
+#!/usr/bin/envy ruby
+
+require_relative '../lib/memcached-server.rb'
 
 hostname = ARGV[0]
 port = ARGV[1]

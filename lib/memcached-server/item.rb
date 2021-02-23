@@ -1,5 +1,5 @@
 class Item
-
+    
     attr_accessor :key
     attr_accessor :flags
     attr_accessor :exptime

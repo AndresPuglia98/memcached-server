@@ -1,6 +1,5 @@
-require_relative 'reply.rb'
-require_relative 'item.rb'
-
+require_relative './reply.rb'
+require_relative './item.rb'
 
 class Memcache
 
@@ -11,7 +10,7 @@ class Memcache
     end
 
     def purge_keys()
-        @storage.delete_if {| key, item | item.expired?}
+        @storage.delete_if { | key, item | item.expired? }
     end
 
     def get(keys)

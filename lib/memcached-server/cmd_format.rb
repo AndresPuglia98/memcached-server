@@ -1,5 +1,4 @@
 class CommandFormat
-
     # \w - A word character ([a-zA-Z0-9_])
     # \d - A digit character ([0-9])
 
@@ -19,5 +18,4 @@ class CommandFormat
 
     # End command
     END_ = /^(?<name>END)\n$/
-
 end
