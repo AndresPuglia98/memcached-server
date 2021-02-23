@@ -18,7 +18,7 @@ event_handler = Thread.new {
   loop do
       command = STDIN.gets()
       socket.write(command)
-      break if $_.match(MemcachedServer::Reply::END_)
+      break if $_.match(MemcachedServer::Reply::END_) # $_ : the last input line of string by gets or readline. Thread and scope local.
       sleep(0.1)
   end
 }
