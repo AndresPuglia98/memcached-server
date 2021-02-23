@@ -8,6 +8,7 @@ module MemcachedServer
         attr_accessor :bytes
         attr_accessor :data_block
         attr_accessor :cas_id
+
         attr_accessor :mutex
 
         @@last_cas_id = 0
@@ -18,7 +19,7 @@ module MemcachedServer
             @bytes = bytes
             @exptime = get_exptime(exptime)
             @data_block = data_block
-            @cas_id = cas_id
+
             @mutex = Mutex.new()
         end
 
