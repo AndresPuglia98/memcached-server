@@ -14,4 +14,13 @@ module MemcachedServer
 
     end
 
+    class ReplyFormat
+
+        GET = /VALUE (?<key>\w+) (?<flags>\d+) (?<bytes>\d+)/
+        GETS = /VALUE (?<key>\w+) (?<flags>\d+) (?<bytes>\d+) (?<cas_id>\d+)/
+
+        END_ = /END/
+        
+    end
+
 end
