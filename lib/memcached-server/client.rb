@@ -15,100 +15,114 @@ module MemcachedServer
     end
 
     def set(key, flags, exptime, bytes, data_block)
-      command = "set #{key} #{flags} #{exptime} #{bytes}\n#{data_block}"
-      @server.write(command)
+      command = "set #{key} #{flags} #{exptime} #{bytes}\n#{data_block}\n"
+      @server.puts(command)
 
       return @server.gets()
     end
 
     def add(key, flags, exptime, bytes, data_block)
-      command = "add #{key} #{flags} #{exptime} #{bytes}\n#{data_block}"
-      @server.write(command)
+      command = "add #{key} #{flags} #{exptime} #{bytes}\n#{data_block}\n"
+      @server.puts(command)
 
       return @server.gets()
     end
 
     def replace(key, flags, exptime, bytes, data_block)
-      command = "replace #{key} #{flags} #{exptime} #{bytes}\n#{data_block}"
-      @server.write(command)
+      command = "replace #{key} #{flags} #{exptime} #{bytes}\n#{data_block}\n"
+      @server.puts(command)
 
       return @server.gets()
     end
 
     def append(key, bytes, data_block)
-      command = "append #{key} #{bytes}\n#{data_block}"
-      @server.write(command)
+      command = "append #{key} #{bytes}\n#{data_block}\n"
+      @server.puts(command)
 
       return @server.gets()
     end
 
     def prepend(key, bytes, data_block)
-      command = "prepend #{key} #{bytes}\n#{data_block}"
-      @server.write(command)
+      command = "prepend #{key} #{bytes}\n#{data_block}\n"
+      @server.puts(command)
 
       return @server.gets()
     end
 
     def cas(key, flags, exptime, bytes, cas_id, data_block)
-      command = "cas #{key} #{flags} #{exptime} #{bytes} #{cas_id}\n#{data_block}"
-      @server.write(command)
+      command = "cas #{key} #{flags} #{exptime} #{bytes} #{cas_id}\n#{data_block}\n"
+      @server.puts(command)
 
       return @server.gets()
     end
 
     def get(keys)
-      @server.write("get #{keys}")
+      @server.puts("get #{keys}")
 
+      n = keys.split(' ').length()
       retrieved = {}
-      loop do
-        case @server.gets()
 
-        when Reply::GET
-          key = $~[:key]
-          flags = $~[:flags].to_i()
-          bytes = $~[:bytes].to_i()
-          data_block = @server.recv(bytes + 1).chomp()
+      n.times do
 
-          item = Item.new(key, flags, 0, bytes, nil, data_block)
-          retrieved[key.to_sym] = item
+        loop do
+          
+          case @server.gets()
+          when ReplyFormat::GET
+            key = $~[:key]
+            flags = $~[:flags].to_i()
+            bytes = $~[:bytes].to_i()
+            data_block = @server.read(bytes + 1).chomp()
 
-        when Reply::END_
-          break
+            item = Item.new(key, flags, 0, bytes, data_block)
+            retrieved[key.to_sym] = item
 
-        else
-          puts $_
-          break
+          when ReplyFormat::END_
+            break
+
+          else
+            puts "Error\nServer: #{$_}"
+            break
+
+          end
+
         end
-        
+
       end
 
       return retrieved
     end
 
     def gets(keys)
-      @server.write("gets #{keys}")
+      @server.puts("gets #{keys}")
 
+      n = keys.split(' ').length()
       retrieved = {}
-      loop do
-        case @server.gets()
 
-        when Reply::GETS
-          key = $~[:key]
-          flags = $~[:flags].to_i()
-          bytes = $~[:bytes].to_i()
-          cas_id = $~[:cas_id].to_i()
-          data_block = @server.recv(bytes + 1).chomp()
+      n.times do
 
-          item = Item.new(key, flags, 0, bytes, data_block)
-          item.cas_id = cas_id
-          retrieved[key.to_sym] = item
+        loop do
 
-        when Reply::END_
-          break
+          case @server.gets()
+          when ReplyFormat::GETS
+            key = $~[:key]
+            flags = $~[:flags].to_i()
+            bytes = $~[:bytes].to_i()
+            cas_id = $~[:cas_id].to_i()
+            data_block = @server.read(bytes + 1).chomp()
 
-        else
-          puts $_
-          break
+            item = Item.new(key, flags, 0, bytes, data_block)
+            item.cas_id = cas_id
+            retrieved[key.to_sym] = item
+
+          when ReplyFormat::END_
+            break
+
+          else
+            puts "Error\nServer: #{$_}"
+            break
+
+          end
+
         end
 
       end
@@ -116,6 +130,12 @@ module MemcachedServer
       return retrieved
     end
 
+    def end()
+      @server.puts('END')
+      return @server.gets()
+    end
+
+    
   end
 
 end
