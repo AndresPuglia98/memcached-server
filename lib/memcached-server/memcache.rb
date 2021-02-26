@@ -1,5 +1,6 @@
 require_relative './item.rb'
 require_relative './constants.rb'
+# require 'concurrent'
 
 module MemcachedServer
 
@@ -8,7 +9,7 @@ module MemcachedServer
         attr_reader :storage
 
         def initialize()
-        @storage = Hash.new()
+        @storage = Hash.new()   #TODO Concurrent::Hash.new()
         end
 
         def purge_keys()
