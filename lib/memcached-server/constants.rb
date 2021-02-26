@@ -1,6 +1,6 @@
 module MemcachedServer
 
-    class CommandFormat
+    module CommandFormat
         # \w - A word character ([a-zA-Z0-9_])
         # \d - A digit character ([0-9])
 
@@ -22,7 +22,7 @@ module MemcachedServer
         END_ = /^(?<name>END)\n$/.freeze
     end
 
-    class Reply
+    module Reply
 
         STORED = "STORED\n".freeze
         NOT_STORED = "NOT_STORED\n".freeze
@@ -36,7 +36,7 @@ module MemcachedServer
 
     end
 
-    class ReplyFormat
+    module ReplyFormat
 
         GET = /VALUE (?<key>\w+) (?<flags>\d+) (?<bytes>\d+)/.freeze
         GETS = /VALUE (?<key>\w+) (?<flags>\d+) (?<bytes>\d+) (?<cas_id>\d+)/.freeze
@@ -45,7 +45,7 @@ module MemcachedServer
         
     end
 
-    class Error
+    module Error
 
         ERROR = "ERROR\r\n".freeze
         CLIENT_ERROR = "CLIENT_ERROR%s\r\n".freeze
