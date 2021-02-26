@@ -20,7 +20,7 @@ module MemcachedServer
             @bytes = bytes
             @data_block = data_block
 
-            @lock = lock.new()
+            @lock = Mutex.new()
         end
 
         def get_cas_id()

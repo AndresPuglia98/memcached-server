@@ -86,7 +86,7 @@ module MemcachedServer
             item = Item.new(key, flags, exptime, bytes, data_block)
             item.update_cas_id()
             item.lock.synchronize do
-                storage.store(key, item) unless item.expired?()
+                @storage.store(key, item) unless item.expired?()
             end
         end
 
