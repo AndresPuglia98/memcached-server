@@ -9,7 +9,7 @@ module MemcachedServer
         attr_accessor :data_block
         attr_accessor :cas_id
 
-        attr_accessor :mutex
+        attr_accessor :lock
 
         @@last_cas_id = 0
 
@@ -20,11 +20,11 @@ module MemcachedServer
             @bytes = bytes
             @data_block = data_block
 
-            @mutex = Mutex.new()
+            @lock = lock.new()
         end
 
         def get_cas_id()
-            @mutex.synchronize do
+            @lock.synchronize do
                 @@last_cas_id += 1
                 next_id = @@last_cas_id.dup()
                 return next_id

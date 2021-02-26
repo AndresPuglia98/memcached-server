@@ -1,6 +1,5 @@
 require_relative './item.rb'
 require_relative './constants.rb'
-# require 'concurrent'
 
 module MemcachedServer
 
@@ -9,7 +8,7 @@ module MemcachedServer
         attr_reader :storage
 
         def initialize()
-        @storage = Hash.new()   #TODO Concurrent::Hash.new()
+        @storage = Hash.new()
         end
 
         def purge_keys()
@@ -47,8 +46,11 @@ module MemcachedServer
             return Reply::NOT_STORED unless @storage.key?(key)
 
             item = @storage[key]
-            item.data_block.concat(new_data)
-            item.bytes += bytes
+            item.lock.synchronize do
+                item.data_block.concat(new_data)
+                item.bytes += bytes
+            end
+
             item.update_cas_id()
             return Reply::STORED
         end
@@ -58,8 +60,11 @@ module MemcachedServer
             return Reply::NOT_STORED unless @storage.key?(key)
 
             item = @storage[key]
-            item.data_block.prepend(new_data)
-            item.bytes += bytes
+            item.lock.synchronize do 
+                item.data_block.prepend(new_data)
+                item.bytes += bytes
+            end
+
             item.update_cas_id()
             return Reply::STORED
         end
@@ -69,19 +74,22 @@ module MemcachedServer
             return Reply::NOT_FOUND unless @storage.key?(key)
 
             item = @storage[key]
-            item.mutex.synchronize do
+            item.lock.synchronize do
                 return Reply::EXISTS if cas_id != item.cas_id
-        
-                store_item(key, flags, exptime, bytes, data_block)
-                return Reply::STORED
             end
+        
+            store_item(key, flags, exptime, bytes, data_block)
+            return Reply::STORED
         end
 
         def store_item(key, flags, exptime, bytes, data_block)
             item = Item.new(key, flags, exptime, bytes, data_block)
             item.update_cas_id()
-            @storage.store(key, item) unless item.expired?
+            item.lock.synchronize do
+                storage.store(key, item) unless item.expired?()
+            end
         end
 
     end
+
 end
