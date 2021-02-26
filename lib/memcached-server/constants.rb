@@ -5,21 +5,21 @@ module MemcachedServer
         # \d - A digit character ([0-9])
 
         # Storage commands
-        SET = /^(?<name>set) (?<key>(\w)+) (?<flags>\d+) (?<exptime>\d+) (?<bytes>\d+)(?<noreply>noreply)?\n/
-        ADD = /^(?<name>add) (?<key>(\w)+) (?<flags>\d+) (?<exptime>\d+) (?<bytes>\d+)(?<noreply>noreply)?\n/
-        REPLACE = /^(?<name>replace) (?<key>(\w)+) (?<flags>\d+) (?<exptime>\d+) (?<bytes>\d+)(?<noreply>noreply)?\n/
+        SET = /^(?<name>set) (?<key>(\w)+) (?<flags>\d+) (?<exptime>\d+) (?<bytes>\d+)(?<noreply>noreply)?\n/.freeze
+        ADD = /^(?<name>add) (?<key>(\w)+) (?<flags>\d+) (?<exptime>\d+) (?<bytes>\d+)(?<noreply>noreply)?\n/.freeze
+        REPLACE = /^(?<name>replace) (?<key>(\w)+) (?<flags>\d+) (?<exptime>\d+) (?<bytes>\d+)(?<noreply>noreply)?\n/.freeze
 
-        APPEND = /^(?<name>append) (?<key>(\w)+) (?<bytes>\d+)(?<noreply>noreply)?\n/
-        PREPEND = /^(?<name>prepend) (?<key>(\w)+) (?<bytes>\d+)(?<noreply>noreply)?\n/
+        APPEND = /^(?<name>append) (?<key>(\w)+) (?<bytes>\d+)(?<noreply>noreply)?\n/.freeze
+        PREPEND = /^(?<name>prepend) (?<key>(\w)+) (?<bytes>\d+)(?<noreply>noreply)?\n/.freeze
 
-        CAS = /^(?<name>cas) (?<key>(\w)+) (?<flags>\d+) (?<exptime>\d+) (?<bytes>\d+) (?<cas_id>\d+)(?<noreply>noreply)?\n/
+        CAS = /^(?<name>cas) (?<key>(\w)+) (?<flags>\d+) (?<exptime>\d+) (?<bytes>\d+) (?<cas_id>\d+)(?<noreply>noreply)?\n/.freeze
 
         # Retrieval commands
-        GET = /^(?<name>get) (?<keys>(\w|\p{Space})+)\n/
-        GETS = /^(?<name>gets) (?<keys>(\w|\p{Space})+)\n/
+        GET = /^(?<name>get) (?<keys>(\w|\p{Space})+)\n/.freeze
+        GETS = /^(?<name>gets) (?<keys>(\w|\p{Space})+)\n/.freeze
 
         # End command
-        END_ = /^(?<name>END)\n$/
+        END_ = /^(?<name>END)\n$/.freeze
     end
 
     class Reply
@@ -38,10 +38,10 @@ module MemcachedServer
 
     class ReplyFormat
 
-        GET = /VALUE (?<key>\w+) (?<flags>\d+) (?<bytes>\d+)/
-        GETS = /VALUE (?<key>\w+) (?<flags>\d+) (?<bytes>\d+) (?<cas_id>\d+)/
+        GET = /VALUE (?<key>\w+) (?<flags>\d+) (?<bytes>\d+)/.freeze
+        GETS = /VALUE (?<key>\w+) (?<flags>\d+) (?<bytes>\d+) (?<cas_id>\d+)/.freeze
 
-        END_ = /END/
+        END_ = /END/.freeze
         
     end
 
