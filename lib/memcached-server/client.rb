@@ -1,5 +1,5 @@
 require 'socket'
-require_relative 'reply.rb'
+require_relative 'constants.rb'
 
 module MemcachedServer
   

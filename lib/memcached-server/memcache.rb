@@ -1,5 +1,5 @@
-require_relative './reply.rb'
 require_relative './item.rb'
+require_relative './constants.rb'
 
 module MemcachedServer
 

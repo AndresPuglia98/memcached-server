@@ -1,7 +1,6 @@
 require 'socket'
 require_relative './memcache.rb'
-require_relative './cmd_format.rb'
-require_relative './errors.rb'
+require_relative './constants.rb'
 
 module MemcachedServer
     
