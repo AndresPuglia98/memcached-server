@@ -1,10 +1,11 @@
 require_relative '../../lib/memcached-server.rb'
+include MemcachedServer
 
-describe MemcachedServer::Server do
+describe Server do
 
     before(:all) do
 
-        @server = MemcachedServer::Server.new('localhost', 2000)
+        @server = Server.new('localhost', 2000)
 
         @valid_commmands = {
             valid_get: "get a b c\n",
