@@ -16,8 +16,8 @@ module MemcachedServer
         def initialize(key, flags, exptime, bytes, data_block)
             @key = key
             @flags = flags
-            @bytes = bytes
             @exptime = get_exptime(exptime)
+            @bytes = bytes
             @data_block = data_block
 
             @mutex = Mutex.new()
