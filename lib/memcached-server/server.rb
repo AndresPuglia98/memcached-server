@@ -22,11 +22,11 @@ module MemcachedServer
             begin
                 loop do
                     Thread.start(@connection.accept()) do | connection |
+                        puts("New connection: #{connection.to_s}.")
 
                         close = false
                         while command = connection.gets()
-
-                            puts("Connection: #{connection.to_s} Command: " + command)
+                            puts("Command: #{command} | Connection: #{connection.to_s}")
 
                             valid_command = validate_command(command)
                             if valid_command
@@ -39,6 +39,7 @@ module MemcachedServer
                         end
                         connection.puts(Reply::END_)
                         connection.close()
+                        puts ("Connection closed to: #{connection}.")
                     end
                 end
             rescue => exception
@@ -117,12 +118,15 @@ module MemcachedServer
 
         def validate_command(command)
             valid_formats = CommandFormat.constants.map{| key | CommandFormat.const_get(key)}
-            valid_formats.each do | form | 
+            valid_formats.each do | form |
+
                 valid_command = command.match(form)
                 return valid_command unless valid_command.nil?
             end
+
             return nil
         end
 
     end
+
 end
