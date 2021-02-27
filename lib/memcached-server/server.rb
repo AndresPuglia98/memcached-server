@@ -7,12 +7,12 @@ module MemcachedServer
     # Class that wraps ap a Memcached server
     class Server
 
-        # Server's hostname or IP address
+        # The server hostname or IP address
         #
         # @return [String, ipaddress]
         attr_reader :hostname
 
-        # The server's port
+        # The server port
         #
         # @return [port]
         attr_reader :port
