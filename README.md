@@ -13,15 +13,15 @@ About Memcached:
 ## Setup
 ### Install gem with 
 ```
-gem install memcached-server
+$ gem install memcached-server
 ```
 ### Run a Memcached server instance
 ```
-memcached-server <hostname or IP address> <port>
+$ memcached-server <hostname or IP address> <port>
 ```
 ### Run a Memcache client instance
 ```
-memcached-client <hostname or IP address> <port>
+$ memcached-client <hostname or IP address> <port>
 ```
 
 ## Usage
@@ -141,10 +141,16 @@ Each item sent by the server looks like this:
 
 If some of the keys appearing in a retrieval request are not sent back by the server in the item list this means that the server does not hold items with such keys (because they were never stored, or stored but deleted to make space for more items, or expired, or explicitly deleted by a client).
 
+### End command
+To end the session use: 
+```
+END
+```
+
 ## Tests
 Run all tests with 
 ```
-rake
+$ rake
 ```
 
 ### JMeter tests
