@@ -3,11 +3,23 @@ A Ruby Memcached server (TCP/IP socket) that complies with the specified protoco
 
 
 ## Dependencies
-### RSpec 
+* rake ~> 13.0.1
+
+* rspec ~> 3.10.1
 
 ## Setup
-TODO: 
-
+### Install gem with 
+```
+gem install memcached-server
+```
+### Run a Memcached server instance
+```
+memcached-server <hostname or IP address> <port>
+```
+### Run a Memcache client instance
+```
+memcached-client <hostname or IP address> <port>
+```
 
 ## Usage
 ### Storage commands
@@ -126,3 +138,9 @@ by the server in the item list this means that the server does not
 hold items with such keys (because they were never stored, or stored
 but deleted to make space for more items, or expired, or explicitly
 deleted by a client).
+
+## Tests
+Run all tests with 
+```
+rake
+```
