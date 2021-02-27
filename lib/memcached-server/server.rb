@@ -19,13 +19,16 @@ module MemcachedServer
 
         # Starts the server
         def run()
+            
             begin
                 loop do
                     Thread.start(@connection.accept()) do | connection |
+
                         puts("New connection: #{connection.to_s}.")
 
                         close = false
                         while command = connection.gets()
+                            
                             puts("Command: #{command} | Connection: #{connection.to_s}")
 
                             valid_command = validate_command(command)
@@ -36,11 +39,15 @@ module MemcachedServer
                             end
 
                             break if close
+
                         end
+
                         connection.puts(Reply::END_)
                         connection.close()
                         puts ("Connection closed to: #{connection}.")
+
                     end
+
                 end
             rescue => exception
                 error = Error::SERVER_ERROR % exception.message
@@ -50,19 +57,21 @@ module MemcachedServer
 
         # Runs a valid memcache command
         # Depends on MemcachedServer::Memcache method names.
-        # In some cases, to make .send method work the MemcachedServer::Memcache 
+        # In some cases, to make #send method work the MemcachedServer::Memcache 
         # corresponding method must be equal to valid_command[:name] 
         # 
         # @param connection [TCPSocket] Client's socket
         # @param valid_command [MatchData] It encapsulates all the results of a valid command pattern match
         # @return [Boolean] false if valid_command[:name] != END else true
         def run_command(connection, valid_command)
+
             name = valid_command[:name]
 
             case name
             when 'set', 'add', 'replace'
+
                 key = valid_command[:key]
-                flags = valid_command[:flags]
+                flags = valid_command[:flags].to_i
                 exptime = valid_command[:exptime].to_i
                 bytes = valid_command[:bytes].to_i
                 noreply = !valid_command[:noreply].nil?
@@ -70,20 +79,24 @@ module MemcachedServer
 
                 reply = @mc.send(name.to_sym, key, flags, exptime, bytes, data)
                 connection.puts(reply) unless noreply
+
                 return false
 
             when 'append', 'prepend'
+
                 key = valid_command[:key]
                 bytes = valid_command[:bytes].to_i
                 data = self.read_bytes(connection, bytes)
 
                 reply = @mc.send(name.to_sym, key, bytes, data)
                 connection.puts(reply) unless noreply
+
                 return false
 
             when 'cas'
+
                 key = valid_command[:key]
-                flags = valid_command[:flags]
+                flags = valid_command[:flags].to_i
                 exptime = valid_command[:exptime].to_i
                 bytes = valid_command[:bytes].to_i
                 noreply = !valid_command[:noreply].nil?
@@ -92,9 +105,11 @@ module MemcachedServer
 
                 reply = @mc.cas(key, flags, exptime, bytes, cas_id, data)
                 connection.puts(reply) unless noreply
+
                 return false
                 
             when 'get'
+
                 keys = valid_command[:keys].split(' ')
                 items = @mc.get(keys)
 
@@ -102,9 +117,11 @@ module MemcachedServer
                     connection.puts(Reply::GET % [item.key, item.flags, item.bytes, item.data_block]) if item
                     connection.puts(Reply::END_)
                 end
+
                 return false
 
             when 'gets'
+
                 keys = valid_command[:keys].split(' ')
                 items = @mc.get(keys)
 
@@ -112,16 +129,20 @@ module MemcachedServer
                     connection.puts(Reply::GETS % [item.key, item.flags, item.bytes, item.cas_id, item.data_block]) if item
                     connection.puts(Reply::END_)
                 end
+
                 return false
 
             else
                 # END command stops run
                 return true
+                
             end
         end
         
         def read_bytes(connection, bytes)
+
             return connection.read(bytes + 1).chomp()
+
         end
 
         # Validates a command.
@@ -130,11 +151,14 @@ module MemcachedServer
         # @param command [String] A command to validate
         # @return [MatchData, nil] It encapsulates all the results of a valid command pattern match
         def validate_command(command)
+
             valid_formats = CommandFormat.constants.map{| key | CommandFormat.const_get(key)}
+
             valid_formats.each do | form |
 
                 valid_command = command.match(form)
                 return valid_command unless valid_command.nil?
+                
             end
 
             return nil
