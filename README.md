@@ -30,7 +30,9 @@ memcached-client <hostname or IP address> <port>
 First, the client sends a command line which looks like this:
 
 ```<command name> <key> <flags> <exptime> <bytes> [noreply]\r\n```
+
 ```cas <key> <flags> <exptime> <bytes> <cas unique> [noreply]\r\n```
+
 
 * ```<command name>``` is "set", "add", "replace", "append" or "prepend"
 
