@@ -133,19 +133,13 @@ Each item sent by the server looks like this:
 
 * ```<flags>``` is the flags value set by the storage command
 
-* ```<bytes>``` is the length of the data block to follow, *not* including
-  its delimiting \r\n
+* ```<bytes>``` is the length of the data block to follow, *not* including its delimiting \r\n
 
-* ```<cas unique>``` is a unique unsigned integer that uniquely identifies
-  this specific item.
+* ```<cas unique>``` is a unique unsigned integer that uniquely identifies this specific item.
 
 * ```<data block>``` is the data for this item.
 
-If some of the keys appearing in a retrieval request are not sent back
-by the server in the item list this means that the server does not
-hold items with such keys (because they were never stored, or stored
-but deleted to make space for more items, or expired, or explicitly
-deleted by a client).
+If some of the keys appearing in a retrieval request are not sent back by the server in the item list this means that the server does not hold items with such keys (because they were never stored, or stored but deleted to make space for more items, or expired, or explicitly deleted by a client).
 
 ## Tests
 Run all tests with 
