@@ -26,8 +26,8 @@ module MemcachedServer
 
         # Retrieves the items corresponding to the given keys from @storage
         # 
-        # @param keys [[String]] Array that contains the keys of the values to retrieve
-        # @return [[MemcachedServer::Item]] Array of MemcachedServer::Item
+        # @param keys [[String]] Array that contains the keys of the items to retrieve
+        # @return [[MemcachedServer::Item]] Array of the retrieved MemcachedServer::Item instances
         def get(keys)
 
             purge_keys()
@@ -149,7 +149,7 @@ module MemcachedServer
         # @param exptime [Integer] The exptime of the Item to store
         # @param bytes [Integer] The byte size of <data_block>
         # @param data_block [String] Is a chunk of arbitrary 8-bit data of length <bytes>
-        # @param cas_id [Integer] Is a unique 64-bit value of an existing entry.
+        # @param cas_id [Integer] Is a unique integer value
         # @return [String] The reply that describes the result of the operation
         def cas(key, flags, exptime, bytes, cas_id, data_block)
 
@@ -187,7 +187,7 @@ module MemcachedServer
                 @storage.store(key, item) unless item.expired?()
 
             end
-            
+
         end
 
     end
