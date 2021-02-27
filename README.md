@@ -1,6 +1,9 @@
 # Memcached server
 A Ruby Memcached server (TCP/IP socket) that complies with the specified protocol.
 
+About Memcached:
+
+> Free & open source, high-performance, distributed memory object caching system, generic in nature, but intended for use in speeding up dynamic web applications by alleviating database load.
 
 ## Dependencies
 * rake ~> 13.0.1
