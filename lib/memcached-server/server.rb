@@ -17,7 +17,8 @@ module MemcachedServer
             @mc = Memcache.new()
         end
 
-        def run
+        # Starts the server
+        def run()
             begin
                 loop do
                     Thread.start(@connection.accept()) do | connection |
@@ -47,6 +48,14 @@ module MemcachedServer
             end
         end
 
+        # Runs a valid memcache command
+        # Depends on MemcachedServer::Memcache method names.
+        # In some cases, to make .send method work the MemcachedServer::Memcache 
+        # corresponding method must be equal to valid_command[:name] 
+        # 
+        # @param connection [TCPSocket] Client's socket
+        # @param valid_command [MatchData] It encapsulates all the results of a valid command pattern match
+        # @return [Boolean] false if valid_command[:name] != END else true
         def run_command(connection, valid_command)
             name = valid_command[:name]
 
@@ -115,6 +124,11 @@ module MemcachedServer
             return connection.read(bytes + 1).chomp()
         end
 
+        # Validates a command.
+        # If the command isn't valid it returns nil.
+        # 
+        # @param command [String] A command to validate
+        # @return [MatchData, nil] It encapsulates all the results of a valid command pattern match
         def validate_command(command)
             valid_formats = CommandFormat.constants.map{| key | CommandFormat.const_get(key)}
             valid_formats.each do | form |
