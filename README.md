@@ -152,3 +152,6 @@ Run all tests with
 ```
 rake
 ```
+
+### JMeter tests
+JMeter tests showed that the server can support up to aprox. 1900 new connections in 1 second, and aprox. 2000 new connections with a frecuency of 10 connections per second.
