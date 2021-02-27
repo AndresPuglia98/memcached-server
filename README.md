@@ -126,6 +126,7 @@ to indicate the end of response.
 Each item sent by the server looks like this:
 
 ```VALUE <key> <flags> <bytes> [<cas unique>]\r\n```
+
 ```<data block>\r\n```
 
 * ```<key>``` is the key for the item being sent
