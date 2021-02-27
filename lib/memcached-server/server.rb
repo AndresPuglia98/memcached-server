@@ -4,17 +4,31 @@ require_relative './constants.rb'
 
 module MemcachedServer
     
+    # Class that wraps ap a Memcached server
     class Server
 
+        # Server's hostname or IP address
+        #
+        # @return [String, ipaddress]
         attr_reader :hostname
+
+        # The server's port
+        #
+        # @return [port]
         attr_reader :port
+
+        # The Memcache object that implements the logic of the Memcache protocol
+        #
+        # @return [MemcachedServer::Memcache]
         attr_reader :mc
 
         def initialize(hostname, port)
+
             @hostname = hostname
             @port = port
             @connection = TCPServer.new(hostname, port)
             @mc = Memcache.new()
+            
         end
 
         # Starts the server
