@@ -110,6 +110,7 @@ with a "cas" command did not exist.
 The retrieval commands "get" and "gets" operate like this:
 
 ```get <key>*\r\n```
+
 ```gets <key>*\r\n```
 
 - ```<key>``` means one or more key strings separated by whitespace.
