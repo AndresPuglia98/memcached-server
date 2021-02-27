@@ -4,7 +4,7 @@ require_relative './constants.rb'
 
 module MemcachedServer
     
-    # Class that wraps ap a Memcached server
+    # Class that wraps up a Memcached server
     class Server
 
         # The server hostname or IP address
