@@ -3,17 +3,20 @@
 require 'socket'
 require_relative '../lib/memcached-server.rb'
 
+# Command line arguments
 hostname = ARGV[0]
 port = ARGV[1]
 
 socket = TCPSocket.new(hostname, port)
 
+# Listener thread
 listener = Thread.new {
   while line = socket.gets()
     puts(line)
   end
 }
 
+# Speaker thread
 speaker = Thread.new {
   loop do
       command = STDIN.gets()

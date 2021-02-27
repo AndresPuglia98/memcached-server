@@ -2,6 +2,7 @@
 
 require_relative '../lib/memcached-server.rb'
 
+# Command line arguments
 hostname = ARGV[0]
 port = ARGV[1]
 
