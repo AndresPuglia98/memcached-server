@@ -72,7 +72,7 @@ First, the client sends a command line which looks like this:
   including the delimiting \r\n. <bytes> may be zero (in which case
   it's followed by an empty data block).
 
-* ```<cas unique>``` is a unique 64-bit value of an existing entry.
+* ```<cas unique>``` is a unique integer value of an existing entry.
   Clients should use the value returned from the "gets" command
   when issuing "cas" updates.
 
