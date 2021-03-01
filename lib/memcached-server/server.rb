@@ -69,11 +69,10 @@ module MemcachedServer
             end
         end
 
-        # Runs a valid memcache command
-        # 
+        # Runs a valid memcache command.
         # Depends on MemcachedServer::Memcache method names.
-        # In some cases, to make #send method work the MemcachedServer::Memcache 
-        # corresponding method must be equal to valid_command[:name] 
+        # In some cases, when the #send method is used, the corresponding
+        # MemcachedServer::Memcache method must be equal to valid_command[:name] 
         # 
         # @param connection [TCPSocket] Client's socket
         # @param valid_command [MatchData] It encapsulates all the results of a valid command pattern match
@@ -161,7 +160,7 @@ module MemcachedServer
         # @return [String] The message read
         def read_bytes(connection, bytes)
 
-            return connection.read(bytes + 1).chomp()
+            return connection.read(bytes).chomp()
 
         end
 
