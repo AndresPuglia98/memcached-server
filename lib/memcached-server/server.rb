@@ -48,8 +48,8 @@ module MemcachedServer
                             valid_command = validate_command(command)
                             if valid_command
                                 close = run_command(connection, valid_command)
-                            else 
-                                connection.puts(Error::CLIENT_ERROR % [" Undefined command. Please check the command syntax and try again."])
+                            else
+                                connection.puts(Error::ERROR)
                             end
 
                             break if close
@@ -91,8 +91,8 @@ module MemcachedServer
                 noreply = !valid_command[:noreply].nil?
                 data = self.read_bytes(connection, bytes)
 
-                reply = @mc.send(name.to_sym, key, flags, exptime, bytes, data)
-                connection.puts(reply) unless noreply
+                reply = @mc.send(name.to_sym, key, flags, exptime, bytes, data) unless data.nil?()
+                connection.puts(reply) unless noreply || reply.nil?()
 
                 return false
 
@@ -102,8 +102,8 @@ module MemcachedServer
                 bytes = valid_command[:bytes].to_i
                 data = self.read_bytes(connection, bytes)
 
-                reply = @mc.send(name.to_sym, key, bytes, data)
-                connection.puts(reply) unless noreply
+                reply = @mc.send(name.to_sym, key, bytes, data) unless data.nil?()
+                connection.puts(reply) unless noreply || reply.nil?()
 
                 return false
 
@@ -117,8 +117,8 @@ module MemcachedServer
                 data = self.read_bytes(connection, bytes)
                 cas_id = valid_command[:cas_id].to_i()
 
-                reply = @mc.cas(key, flags, exptime, bytes, cas_id, data)
-                connection.puts(reply) unless noreply
+                reply = @mc.cas(key, flags, exptime, bytes, cas_id, data) unless data.nil?()
+                connection.puts(reply) unless noreply || reply.nil?()
 
                 return false
                 
@@ -157,11 +157,17 @@ module MemcachedServer
         # 
         # @param connection [TCPSocket] Client's socket
         # @param bytes [Integer] The number of bytes to read
-        # @return [String] The message read
+        # @return [String, nil] The message read
         def read_bytes(connection, bytes)
 
-            return connection.read(bytes).chomp()
+            data_chunk = connection.read(bytes + 1).chomp()
 
+            if data_chunk.bytesize() != bytes
+                connection.puts(Error::CLIENT_ERROR % [" bad data chunk"])
+                return nil
+            end
+
+            return data_chunk
         end
 
         # Validates a command.
