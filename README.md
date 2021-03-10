@@ -139,7 +139,7 @@ Each item sent by the server looks like this:
 
 * ```<data block>``` is the data for this item.
 
-If some of the keys appearing in a retrieval request are not sent back by the server in the item list this means that the server does not hold items with such keys (because they were never stored, or stored but deleted to make space for more items, or expired, or explicitly deleted by a client).
+If some of the keys appearing in a retrieval request are not sent back by the server in the item list this means that the server does not hold items with such keys (because they were never stored, or stored but deleted to make space for more items, or expired).
 
 ### End command
 To end the session use: 
@@ -150,11 +150,11 @@ END
 ## Tests
 Run all tests with 
 ```
-$ rake
+$ rspec
 ```
 
 ### JMeter tests
 JMeter tests showed that the server can support up to aprox. 1900 new connections in 1 second, and aprox. 2000 new connections with a frecuency of 10 connections per second.
 
 ## Licence
-### MIT License
+[The MIT License](https://opensource.org/licenses/MIT)
