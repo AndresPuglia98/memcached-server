@@ -66,11 +66,11 @@ RSpec.describe Server do
 
         context "when failure" do
             before(:each) do
-                @sock = TCPSocket.new('localhost', 2000)
-                @sock.puts("fail_test")
+                @socket = TCPSocket.new('localhost', 2000)
+                @socket.puts("fail_test")
                 connection.puts(data_chunk)
-                @result_data = @sock.gets().chomp()
-                @sock.close
+                @result_data = @socket.gets().chomp()
+                @socket.close
             end
 
             it "responds with CLIENT_ERROR" do
