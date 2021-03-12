@@ -1,7 +1,7 @@
 require_relative '../../lib/memcached-server.rb'
 include MemcachedServer
 
-describe Server do
+RSpec.describe Server do
 
     before(:all) do
 
@@ -23,20 +23,28 @@ describe Server do
 
     end
 
-    it "validates a command" do
+    describe "#validate_command" do
 
-        valid_results = []
-        invalid_command = "gats a b c"
-        invalid_result = @server.validate_command(invalid_command)
-        @valid_commmands.each_value { | value | valid_results.append(@server.validate_command(value)) }
+        context "when success" do
+            let(:valid_results) { @valid_commmands.each_value.map { | value | @server.validate_command(value) } }
 
-        for r in valid_results do
-            
-            expect(r).to be_truthy
-            
+            it "returns a valid command match" do
+
+                for result in valid_results do
+                    expect(result).to be_truthy
+                end
+
+            end
         end
-        
-        expect(invalid_result).to be nil
+
+        context "when failure" do
+            let(:invalid_command) { "gats a b c" }
+            let(:invalid_result) { @server.validate_command(invalid_command) }
+
+            it "returns nil" do
+                expect(invalid_result).to be nil
+            end
+        end
     end
 
 end

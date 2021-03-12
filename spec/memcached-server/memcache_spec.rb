@@ -1,132 +1,230 @@
 require_relative '../../lib/memcached-server.rb'
 include MemcachedServer
 
-describe Memcache do
+RSpec.describe Memcache do
 
     before(:each) do 
 
         @memcache = Memcache.new()
         @storage = @memcache.storage
+
         @item_a = Item.new("a", 0, 0, 5, "val_a")
-        @item_b = Item.new("b", 0, 0, 5, "val_b")
-        @item_c = Item.new("c", 0, 0, 5, "val_c")
 
     end
 
-    it "should purge expired keys in storage" do
-
-        expired_item = Item.new("key", 0, -1, 3, "val")
-        item_to_expire = Item.new("kee", 0, 0.1, 3, "val")
-        @storage.store(:key, expired_item)
-        @storage.store(:kee, item_to_expire)
-
-        sleep(0.1)
-        @memcache.purge_keys()
-
-        expect(@storage).to be_empty
-
-    end
-
-    it "should store some data but only if it wasn't updated since it was last fetched" do
-
-        @item_a.update_cas_id()
-        @storage.store("a", @item_a)
-
-        reply_stored = @memcache.cas("a", 0, 0, 3, 1, "val")
-        reply_exists = @memcache.cas("a", 0, 0, 3, 4, "val")
-        reply_not_found = @memcache.cas("b", 0, 0, 3, 1, "val")
-
-        expect(reply_stored).to eq Reply::STORED
-        expect(reply_exists).to eq Reply::EXISTS
-        expect(reply_not_found).to eq Reply::NOT_FOUND
-
-    end
-
-    it "should get the desired items if they are stored" do
-
-        @storage.store(:a, @item_a)
-        @storage.store(:b, @item_b)
-        @storage.store(:c, @item_c)
-
-        one_item = @memcache.get([:a])
-        items = @memcache.get([:a, :b, :c])
+    describe "#purge_keys" do
+             
+        context "when success" do
+            let(:expired_item)   { Item.new("key", 0, -1, 3, "val") }
+            let(:item_to_expire) { Item.new("kee", 0, 0.1, 3, "val") }
+            
+            before(:each) do 
+                @storage.store(:key, expired_item)
+                @storage.store(:kee, item_to_expire)
         
-        expect(one_item).to eq [@item_a]
-        expect(items).to eq [@item_a, @item_b, @item_c]
-
+                sleep(0.1)
+                @memcache.purge_keys()
+            end
+            
+            it "purges expired keys in storage" do
+                expect(@storage).to be_empty
+            end
+        end
     end
+    
+    describe "#cas" do
 
-    it "should store an item with the given args and return a reply" do
+        before(:each) do
+            @item_a.update_cas_id()
+            @storage.store("a", @item_a)
+        end
 
-        reply_stored = @memcache.set("a", 0, 0, 5, "val_a")
+        context "when success" do
+            let(:reply_stored) { @memcache.cas("a", 0, 0, 3, 1, "val") }
 
-        expect(@storage["a"].key).to eq "a"
-        expect(reply_stored).to eq Reply::STORED
+            it "responds with STORED" do
+                expect(reply_stored).to eq Reply::STORED
+            end
+        end
         
+        context "when failure" do
+            let(:reply_exists)    { @memcache.cas("a", 0, 0, 3, 4, "val") }
+            let(:reply_not_found) { @memcache.cas("b", 0, 0, 3, 1, "val") }
+
+            it "responds with EXISTS" do
+                expect(reply_exists).to eq Reply::EXISTS                
+            end
+
+            it "responds with NOT_FOUND" do
+                expect(reply_not_found).to eq Reply::NOT_FOUND 
+            end
+        end
     end
 
-    it "should store an item only if it isn't already stored and return a reply" do
+    describe "#get" do
 
-        @storage.store("a", @item_a)
+        context "when success" do
+            let(:item_b) { Item.new("b", 0, 0, 5, "val_b") }
+            let(:item_c) { Item.new("c", 0, 0, 5, "val_c") }
+
+            let(:empty)       { @memcache.get([]) }
+            let(:one_item)    { @memcache.get([:a]) }
+            let(:three_items) { @memcache.get([:a, :b, :c]) }
+
+            before(:each) do
+                @storage.store(:a, @item_a)
+                @storage.store(:b, item_b)
+                @storage.store(:c, item_c)
+            end
+            
+
+            it "retrieves zero items" do
+                expect(empty).to be_empty
+            end
+
+            it "retrieves one item" do
+                expect(one_item).to eq [@item_a]
+            end
+            
+            it "retrieves three items" do
+                expect(three_items).to eq [@item_a, item_b, item_c]
+            end
+        end
+
+        context "when failure" do
+            let(:nil_items) { @memcache.get([:x, :y, :z]) }
+
+            it "returns an array with nil values" do
+                expect(nil_items).to eq [nil, nil, nil]
+            end
+        end
+    end
+
+    describe "#set" do
+
+        context "when success" do
+            let(:reply_stored) { @memcache.set("a", 0, 0, 5, "val_a") }
+
+            it "responds with STORED" do
+                expect(reply_stored).to eq Reply::STORED
+            end
+        end
+    end
+
+    describe "#add" do
+
+        before(:each) do
+            @storage.store("a", @item_a)
+        end
+
+        context "when success" do
+            let(:reply_stored) { @memcache.add("b", 0, 0, 3, "val") }
+
+            it "responds with STORED" do
+                expect(reply_stored).to eq Reply::STORED
+            end
+        end
+
+        context "when failure" do
+            let(:reply_not_stored) { @memcache.add("a", 0, 0, 3, "val") }
+
+            it "responds with NOT_STORED" do
+                expect(reply_not_stored).to eq Reply::NOT_STORED
+            end
+        end
+    end
+
+    describe "#replace" do
+
+        before(:each) do
+            @storage.store("a", @item_a)
+        end
+
+        context "when success" do
+            let(:reply_stored) { @memcache.replace("a", 0, 0, 3, "val") }
+
+            it "responds with STORED" do
+                expect(reply_stored).to eq Reply::STORED
+            end
+        end
         
-        reply_stored = @memcache.add("b", 0, 0, 3, "val")
-        reply_not_stored = @memcache.add("a", 0, 0, 3, "val")
+        context "when failure" do
+            let(:reply_not_stored) { @memcache.replace("b", 0, 0, 3, "val") }
 
-        expect(@storage["a"].key).to eq "a"
-        expect(@storage["b"].key).to eq "b"
-        expect(reply_stored).to eq Reply::STORED
-        expect(reply_not_stored).to eq Reply::NOT_STORED
-
+            it "responds with NOT_STORED" do
+                expect(reply_not_stored).to eq Reply::NOT_STORED
+            end
+        end
     end
 
-    it "should store an item only if it is already stored" do
+    describe "#append" do
 
-        @storage.store("a", @item_a)
-        
-        reply_stored = @memcache.replace("a", 0, 0, 3, "val")
-        reply_not_stored = @memcache.replace("b", 0, 0, 3, "val")
+        before(:each) do
+            @storage.store("a", @item_a)
+        end
 
-        expect(@storage["a"].data_block).to eq "val"
-        expect(@storage["b"]).to be_nil
-        expect(reply_stored).to eq Reply::STORED
-        expect(reply_not_stored).to eq Reply::NOT_STORED
+        context "when success" do
+            let(:reply_stored) { @memcache.append("a", 4, "_new") }
 
+            it "responds with STORED" do
+                expect(reply_stored).to eq Reply::STORED
+            end
+        end
+
+        context "when failure" do
+            let(:reply_not_stored) { @memcache.append("b", 3, "val") }
+
+            it "responds with NOT_STORED" do
+                expect(reply_not_stored).to eq Reply::NOT_STORED
+            end
+        end
     end
 
-    it "should add the extra data to an existing key after existing data" do
+    describe "#prepend" do
 
-        @storage.store("a", @item_a)
+        before(:each) do
+            @storage.store("a", @item_a)
+        end
 
-        reply_stored = @memcache.append("a", 4, "_new")
-        reply_not_stored = @memcache.append("b", 3, "val")
+        context "when success" do
+            let(:reply_stored) { @memcache.prepend("a", 4, "new_") }
 
-        expect(@storage["a"].data_block).to eq "val_a_new"
-        expect(reply_stored).to eq Reply::STORED
-        expect(reply_not_stored).to eq Reply::NOT_STORED
+            it "responds with STORED" do
+                expect(reply_stored).to eq Reply::STORED
+            end
+        end
 
+        context "when failure" do
+            let(:reply_not_stored) { @memcache.prepend("b", 3, "val") }
+
+            it "responds with NOT_STORED" do
+                expect(reply_not_stored).to eq Reply::NOT_STORED
+            end
+        end
     end
 
-    it "should add the extra data to an existing key before existing data" do
+    describe "#store_item" do
 
-        @storage.store("a", @item_a)
+        context "when success" do
+            before(:each) do
+                @memcache.store_item("a", 0, 600, 3, "val")
+                @memcache.store_item("b", 0, 0, 3, "val")
+            end
 
-        reply_stored = @memcache.prepend("a", 4, "new_")
-        reply_not_stored = @memcache.prepend("b", 3, "val")
+            it "stores two items" do
+                expect(@storage.keys).to eq ["a", "b"]
+            end
+        end
 
-        expect(@storage["a"].data_block).to eq "new_val_a"
-        expect(reply_stored).to eq Reply::STORED
-        expect(reply_not_stored).to eq Reply::NOT_STORED
+        context "when failure" do
+            before(:each) do
+                @memcache.store_item("c", 0, -1, 3, "val")
+            end
 
+            it "does not store the expired item" do
+                expect(@storage["c"]).to be nil
+            end
+        end
     end
-
-    it "shoud store an item unless it is expired" do
-
-        @memcache.store_item("a", 0, 600, 3, "val")
-        @memcache.store_item("b", 0, 0, 3, "val")
-        @memcache.store_item("c", 0, -1, 3, "val")
-
-        expect(@storage.keys).to eq ["a", "b"]
-
-    end
-
+    
 end
