@@ -51,7 +51,6 @@ RSpec.describe Server do
         let(:connection) { @server.accept() }
         
         context "when success" do
-
             before(:each) do 
                 @socket = TCPSocket.new('localhost', 2000)
                 @socket.puts("test")
