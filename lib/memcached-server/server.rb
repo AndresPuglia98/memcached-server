@@ -42,7 +42,7 @@ module MemcachedServer
 
                         close = false
                         while command = connection.gets()
-                            
+
                             puts("Command: #{command} | Connection: #{connection.to_s}")
 
                             valid_command = validate_command(command)
@@ -61,8 +61,8 @@ module MemcachedServer
                         puts ("Connection closed to: #{connection}.")
 
                     end
-
                 end
+                
             rescue => exception
                 error = Error::SERVER_ERROR % exception.message
                 connection.puts(error)
@@ -187,6 +187,12 @@ module MemcachedServer
             end
 
             return nil
+        end
+
+        # Accepts a connection
+        # @return [TCPSocket] An accepted TCPSocket for the incoming connection.
+        def accept()
+            return @connection.accept()
         end
 
     end
