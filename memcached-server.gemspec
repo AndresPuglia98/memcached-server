@@ -3,7 +3,7 @@ require 'rake'
 Gem::Specification.new do |spec|
   
   spec.name          = 'memcached-server'
-  spec.version       = '1.0.1'
+  spec.version       = '1.0.2'
   spec.authors       = ['José Andrés Puglia Laca']
   spec.email         = ['andrespuglia98@gmail.com']
   spec.summary       = 'A simple Memcached server implemented in Ruby.'
