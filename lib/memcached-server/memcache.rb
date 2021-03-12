@@ -176,8 +176,7 @@ module MemcachedServer
         # @param flags [Integer] Is an arbitrary unsigned integer (written out in decimal)
         # @param exptime [Integer] The exptime of the Item to store
         # @param bytes [Integer] The byte size of <data_block>
-        # @param data_block [String] Is a chunk of arbitrary 8-bit data of length <bytes> 
-        # @return [String] The reply that describes the result of the operation
+        # @param data_block [String] Is a chunk of arbitrary 8-bit data of length <bytes>
         def store_item(key, flags, exptime, bytes, data_block)
 
             item = Item.new(key, flags, exptime, bytes, data_block)
