@@ -32,40 +32,45 @@ module MemcachedServer
         end
 
         # Starts the server
-        def run()
-            
-            begin
-                loop do
+        def run() 
+            loop do
+                begin
                     Thread.start(@connection.accept()) do | connection |
 
                         puts("New connection: #{connection.to_s}.")
 
                         close = false
-                        while command = connection.gets()
+                        
+                        begin
 
-                            puts("Command: #{command} | Connection: #{connection.to_s}")
+                            while command = connection.gets()
 
-                            valid_command = validate_command(command)
-                            if valid_command
-                                close = run_command(connection, valid_command)
-                            else
-                                connection.puts(Error::ERROR)
+                                puts("Command: #{command} | Connection: #{connection.to_s}")
+
+                                valid_command = validate_command(command)
+                                if valid_command
+                                    close = run_command(connection, valid_command)
+                                else
+                                    connection.puts(Error::ERROR)
+                                end
+
+                                break if close
+
                             end
 
-                            break if close
-
+                        rescue => exception
+                            puts(exception.message)
                         end
 
                         connection.puts(Reply::END_)
                         connection.close()
-                        puts ("Connection closed to: #{connection}.")
-
+                        puts("Connection closed to: #{connection}.")
+                        
                     end
+                rescue Interrupt
+                    puts('Shutting down Memcached server...')
+                    break
                 end
-                
-            rescue => exception
-                error = Error::SERVER_ERROR % exception.message
-                connection.puts(error)
             end
         end
 
@@ -189,7 +194,8 @@ module MemcachedServer
             return nil
         end
 
-        # Accepts a connection
+        # Accepts a connection.
+        # Used for testing only.
         # @return [TCPSocket] An accepted TCPSocket for the incoming connection.
         def accept()
             return @connection.accept()
