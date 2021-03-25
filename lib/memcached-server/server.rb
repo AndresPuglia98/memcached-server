@@ -168,7 +168,7 @@ module MemcachedServer
             data_chunk = connection.read(bytes + 1).chomp()
 
             if data_chunk.bytesize() != bytes
-                connection.puts(Error::CLIENT_ERROR % [" bad data chunk"])
+                connection.puts(Error::CLIENT_ERROR % ' bad data chunk')
                 return nil
             end
 
