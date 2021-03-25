@@ -47,6 +47,8 @@ module MemcachedServer
         # @param data_block [String] Is a chunk of arbitrary 8-bit data of length <bytes> 
         # @return [String] The reply that describes the result of the operation
         def set(key, flags, exptime, bytes, data_block)
+            
+            return too_large_item() if bytes > Settings::ITEM_SIZE_MAX
 
             store_item(key, flags, exptime, bytes, data_block)
             return Reply::STORED
@@ -67,6 +69,8 @@ module MemcachedServer
             purge_keys()
             
             return Reply::NOT_STORED if @storage.key?(key)
+
+            return too_large_item() if bytes > Settings::ITEM_SIZE_MAX
             
             store_item(key, flags, exptime, bytes, data_block)
             return Reply::STORED
@@ -85,6 +89,8 @@ module MemcachedServer
         def replace(key, flags, exptime, bytes, data_block)
             
             return Reply::NOT_STORED unless @storage.key?(key)
+
+            return too_large_item() if bytes > Settings::ITEM_SIZE_MAX
 
             store_item(key, flags, exptime, bytes, data_block)
             return Reply::STORED
@@ -111,6 +117,8 @@ module MemcachedServer
 
             end
 
+            return too_large_item() if item.bytes > Settings::ITEM_SIZE_MAX
+
             item.update_cas_id()
             return Reply::STORED
 
@@ -135,6 +143,8 @@ module MemcachedServer
                 item.bytes += bytes
 
             end
+
+            return too_large_item() if item.bytes > Settings::ITEM_SIZE_MAX
 
             item.update_cas_id()
             return Reply::STORED
@@ -163,6 +173,8 @@ module MemcachedServer
                 return Reply::EXISTS if cas_id != item.cas_id
 
             end
+
+            return too_large_item() if bytes > Settings::ITEM_SIZE_MAX
         
             store_item(key, flags, exptime, bytes, data_block)
             return Reply::STORED
@@ -187,6 +199,10 @@ module MemcachedServer
 
             end
 
+        end
+
+        def too_large_item()
+            return Error::SERVER_ERROR % ' object too large for cache'
         end
 
     end
