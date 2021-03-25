@@ -1,5 +1,9 @@
 module MemcachedServer
 
+    module Settings
+        ITEM_SIZE_MAX = (1024*1024).freeze # Max. byte size an item can have. Default is 1024*1024 (1MB)
+    end
+
     module CommandFormat
         # \w - A word character ([a-zA-Z0-9_])
         # \d - A digit character ([0-9])
